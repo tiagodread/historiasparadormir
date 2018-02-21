@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_play"
+        android:icon="@drawable/zoom_in"
+        android:title="Play"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_pause"
+        android:icon="@drawable/zoom_out"
+        android:title="Pause"
+        app:showAsAction="ifRoom"
+        android:visible="false" />
+
+    <item
+        android:id="@+id/action_share"
+        android:icon="@drawable/share"
+        android:title="Share"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/acction_size"
+        android:icon="@drawable/ic_format_size_black_24px"
+        android:title="Size"
+        app:showAsAction="ifRoom" />
+
+</menu>
