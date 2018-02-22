@@ -5,6 +5,55 @@
     android:layout_margin="70px"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/seekBar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="35dp"
+            android:text="Cor de fundo"
+            android:textAlignment="center" />
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn-branco"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Branco" />
+
+            <Button
+                android:id="@+id/btn-preto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Preto" />
+
+            <Button
+                android:id="@+id/btn-sepia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sepia" />
+        </TableRow>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Altere o tamanho da fonte" />
+
     <TextView
         android:id="@+id/size"
         android:layout_width="match_parent"
@@ -22,15 +71,5 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:max="30" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/seekBar"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="35dp"
-        android:text="Altere o tamanho da fonte"
-        android:textAlignment="center" />
 
 </RelativeLayout>

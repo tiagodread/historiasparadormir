@@ -16,9 +16,9 @@
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:background="@drawable/shape_layout_rounded"
-        android:scrollbarStyle="insideInset"
-        android:fillViewport="true"
         android:clipToPadding="false"
+        android:fillViewport="true"
+        android:scrollbarStyle="insideInset"
         android:windowSoftInputMode="stateAlwaysHidden|adjustResize|adjustPan">
 
 

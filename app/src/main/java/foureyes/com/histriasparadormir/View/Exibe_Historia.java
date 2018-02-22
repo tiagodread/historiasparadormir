@@ -2,10 +2,13 @@ package foureyes.com.histriasparadormir.View;
 
 import android.annotation.TargetApi;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
@@ -14,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -39,6 +43,11 @@ public class Exibe_Historia extends AppCompatActivity {
     private SeekBar seekBar;
     private TextView tv;
     private LayoutInflater inflater;
+    private SharedPreferences preferencias;
+    private SharedPreferences.Editor editor;
+    private int text_size = 0;
+    private Button branco;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +57,9 @@ public class Exibe_Historia extends AppCompatActivity {
         inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
         layout = inflater.inflate(R.layout.custom_dialog, null);
         seekBar = (SeekBar) layout.findViewById(R.id.seekBar);
+        branco = (Button) layout.findViewById(R.id.btn_branco);
+
+
         mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
@@ -73,6 +85,11 @@ public class Exibe_Historia extends AppCompatActivity {
         txtConteudo.append(Html.fromHtml(conteudoHistoria));
         seekBar.setProgress(20);
         sizeDialog = new Dialog(this);
+
+        preferencias = getPreferences(Context.MODE_PRIVATE);
+        text_size = preferencias.getInt("text_size",20);
+        txtConteudo.setTextSize(text_size);
+
     }
 
 
@@ -153,18 +170,29 @@ public class Exibe_Historia extends AppCompatActivity {
         this.getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
     }
 
+
     private void showDialogSize() {
         if(sizeDialog!=null){
             sizeDialog.setContentView(layout);
         }
 
-        tv.setText(String.valueOf(seekBar.getProgress()) + "px");
-        txtConteudo.setTextSize(Float.parseFloat(String.valueOf(seekBar.getProgress())));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            seekBar.setProgress(text_size);
+        }
+        tv.setText(String.valueOf(text_size + "px"));
+        txtConteudo.setTextSize(text_size,20);
 
 
         Exibe_Historia.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
+                branco.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.e("Erro","Clicado");
+                    }
+                });
 
                 seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -172,6 +200,9 @@ public class Exibe_Historia extends AppCompatActivity {
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         tv.setText(String.valueOf(progress) + "px");
                         txtConteudo.setTextSize(Float.parseFloat(String.valueOf(progress)));
+                        editor = preferencias.edit();
+                        editor.putInt("text_size",progress);
+                        editor.commit();
                     }
 
                     @Override
@@ -189,4 +220,5 @@ public class Exibe_Historia extends AppCompatActivity {
 
         sizeDialog.show();
     }
+
 }
