@@ -7,11 +7,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -46,7 +49,8 @@ public class Exibe_Historia extends AppCompatActivity {
     private SharedPreferences preferencias;
     private SharedPreferences.Editor editor;
     private int text_size = 0;
-    private Button branco;
+    private Button branco,preto,sepia;
+    private View backgroundLayout;
 
 
     @Override
@@ -58,6 +62,10 @@ public class Exibe_Historia extends AppCompatActivity {
         layout = inflater.inflate(R.layout.custom_dialog, null);
         seekBar = (SeekBar) layout.findViewById(R.id.seekBar);
         branco = (Button) layout.findViewById(R.id.btn_branco);
+        preto = (Button) layout.findViewById(R.id.btn_preto);
+        sepia = (Button) layout.findViewById(R.id.btn_sepia);
+        backgroundLayout =(View) findViewById(R.id.backgroundLayout);
+
 
 
         mAdView = (AdView) findViewById(R.id.adView);
@@ -177,10 +185,10 @@ public class Exibe_Historia extends AppCompatActivity {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            seekBar.setProgress(text_size);
+            seekBar.setProgress(preferencias.getInt("text_size",20));
         }
-        tv.setText(String.valueOf(text_size + "px"));
-        txtConteudo.setTextSize(text_size,20);
+        tv.setText(String.valueOf(String.valueOf(preferencias.getInt("text_size",20) + "px")));
+        txtConteudo.setTextSize(preferencias.getInt("text_size",20));
 
 
         Exibe_Historia.this.runOnUiThread(new Runnable() {
@@ -190,7 +198,30 @@ public class Exibe_Historia extends AppCompatActivity {
                 branco.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.e("Erro","Clicado");
+                        backgroundLayout.setBackground(getResources().getDrawable(R.color.branco));
+                        txtTitulo.setTextColor(Color.BLACK);
+                        txtCategoria.setTextColor(Color.BLACK);
+                        txtConteudo.setTextColor(Color.BLACK);
+                    }
+                });
+
+                preto.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        backgroundLayout.setBackground(getResources().getDrawable(R.color.preto));
+                        txtTitulo.setTextColor(Color.WHITE);
+                        txtCategoria.setTextColor(Color.WHITE);
+                        txtConteudo.setTextColor(Color.WHITE);
+                    }
+                });
+
+                sepia.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        backgroundLayout.setBackground(getResources().getDrawable(R.color.sepia));
+                        txtTitulo.setTextColor(Color.parseColor("#616161"));
+                        txtCategoria.setTextColor(Color.parseColor("#616161"));
+                        txtConteudo.setTextColor(Color.parseColor("#616161"));
                     }
                 });
 
@@ -200,24 +231,21 @@ public class Exibe_Historia extends AppCompatActivity {
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         tv.setText(String.valueOf(progress) + "px");
                         txtConteudo.setTextSize(Float.parseFloat(String.valueOf(progress)));
-                        editor = preferencias.edit();
-                        editor.putInt("text_size",progress);
-                        editor.commit();
                     }
 
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {
-
                     }
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-
+                        editor = preferencias.edit();
+                        editor.putInt("text_size",seekBar.getProgress());
+                        editor.commit();
                     }
                 });
             }
         });
-
         sizeDialog.show();
     }
 

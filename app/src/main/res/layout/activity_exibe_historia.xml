@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/backgroundLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/background_gradient"
+    android:paddingBottom="8dp"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
     android:paddingTop="8dp"
-    tools:context=".View.Exibe_Historia"
-    android:paddingBottom="8dp">
+    tools:context=".View.Exibe_Historia">
 
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:background="@drawable/shape_layout_rounded"
         android:clipToPadding="false"
         android:fillViewport="true"
         android:scrollbarStyle="insideInset"
