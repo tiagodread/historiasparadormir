@@ -1,12 +1,10 @@
 package foureyes.com.histriasparadormir.View;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -19,10 +17,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
-
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-
 import foureyes.com.histriasparadormir.Controll.JsonReceiverHistorias;
 import foureyes.com.histriasparadormir.DAO.Banco;
 import foureyes.com.histriasparadormir.R;
@@ -56,7 +52,6 @@ public class Exibe_Lista extends AppCompatActivity {
             edit_item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
         return super.onCreateOptionsMenu(menu);
-
     }
 
     @Override
@@ -65,7 +60,6 @@ public class Exibe_Lista extends AppCompatActivity {
             case 1:
                 exibeAlert();
                 return true;
-
             default:
                 return false;
         }
@@ -150,8 +144,6 @@ public class Exibe_Lista extends AppCompatActivity {
             }
         });
         AlertDialog dialog = builder.create();
-
-
        dialog.show();
 
     }

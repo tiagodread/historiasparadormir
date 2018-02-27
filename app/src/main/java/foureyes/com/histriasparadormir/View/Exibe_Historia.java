@@ -9,11 +9,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,13 +19,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-
 import foureyes.com.histriasparadormir.R;
 
 public class Exibe_Historia extends AppCompatActivity {
@@ -49,7 +44,8 @@ public class Exibe_Historia extends AppCompatActivity {
     private SharedPreferences preferencias;
     private SharedPreferences.Editor editor;
     private int text_size = 0;
-    private Button branco,preto,sepia;
+    private String background_color;
+    private Button branco, preto, sepia;
     private View backgroundLayout;
 
 
@@ -64,8 +60,7 @@ public class Exibe_Historia extends AppCompatActivity {
         branco = (Button) layout.findViewById(R.id.btn_branco);
         preto = (Button) layout.findViewById(R.id.btn_preto);
         sepia = (Button) layout.findViewById(R.id.btn_sepia);
-        backgroundLayout =(View) findViewById(R.id.backgroundLayout);
-
+        backgroundLayout = (View) findViewById(R.id.backgroundLayout);
 
 
         mAdView = (AdView) findViewById(R.id.adView);
@@ -95,11 +90,11 @@ public class Exibe_Historia extends AppCompatActivity {
         sizeDialog = new Dialog(this);
 
         preferencias = getPreferences(Context.MODE_PRIVATE);
-        text_size = preferencias.getInt("text_size",20);
+        text_size = preferencias.getInt("text_size", 20);
+        background_color = preferencias.getString("background_color","branco");
+        setColors(background_color);
         txtConteudo.setTextSize(text_size);
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -119,13 +114,12 @@ public class Exibe_Historia extends AppCompatActivity {
         if (id == R.id.action_play) {
             handleMenuOption(id);
             return true;
-
         } else if (id == R.id.action_share) {
             share();
             return true;
         } else if (id == R.id.action_pause) {
             handleMenuOption(id);
-        }else if(id == R.id.acction_size){
+        } else if (id == R.id.acction_size) {
             showDialogSize();
         }
         return super.onOptionsItemSelected(item);
@@ -146,7 +140,7 @@ public class Exibe_Historia extends AppCompatActivity {
     public void share() {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "Leia: " + tituloHistoria + " em: https://play.google.com/store/apps/details?id=com.digitalbooks");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "Leia: " + tituloHistoria + "para seu filho em: https://play.google.com/store/apps/details?id=com.digitalbooks");
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
     }
@@ -178,17 +172,16 @@ public class Exibe_Historia extends AppCompatActivity {
         this.getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
     }
 
-
     private void showDialogSize() {
-        if(sizeDialog!=null){
+        if (sizeDialog != null) {
             sizeDialog.setContentView(layout);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            seekBar.setProgress(preferencias.getInt("text_size",20));
+            seekBar.setProgress(preferencias.getInt("text_size", 20));
         }
-        tv.setText(String.valueOf(String.valueOf(preferencias.getInt("text_size",20) + "px")));
-        txtConteudo.setTextSize(preferencias.getInt("text_size",20));
+        tv.setText(String.valueOf(String.valueOf(preferencias.getInt("text_size", 20) + "px")));
+        txtConteudo.setTextSize(preferencias.getInt("text_size", 20));
 
 
         Exibe_Historia.this.runOnUiThread(new Runnable() {
@@ -198,30 +191,21 @@ public class Exibe_Historia extends AppCompatActivity {
                 branco.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        backgroundLayout.setBackground(getResources().getDrawable(R.color.branco));
-                        txtTitulo.setTextColor(Color.BLACK);
-                        txtCategoria.setTextColor(Color.BLACK);
-                        txtConteudo.setTextColor(Color.BLACK);
+                        setColors("branco");
                     }
                 });
 
                 preto.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        backgroundLayout.setBackground(getResources().getDrawable(R.color.preto));
-                        txtTitulo.setTextColor(Color.WHITE);
-                        txtCategoria.setTextColor(Color.WHITE);
-                        txtConteudo.setTextColor(Color.WHITE);
+                        setColors("preto");
                     }
                 });
 
                 sepia.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        backgroundLayout.setBackground(getResources().getDrawable(R.color.sepia));
-                        txtTitulo.setTextColor(Color.parseColor("#616161"));
-                        txtCategoria.setTextColor(Color.parseColor("#616161"));
-                        txtConteudo.setTextColor(Color.parseColor("#616161"));
+                        setColors("sepia");
                     }
                 });
 
@@ -240,7 +224,7 @@ public class Exibe_Historia extends AppCompatActivity {
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
                         editor = preferencias.edit();
-                        editor.putInt("text_size",seekBar.getProgress());
+                        editor.putInt("text_size", seekBar.getProgress());
                         editor.commit();
                     }
                 });
@@ -249,4 +233,32 @@ public class Exibe_Historia extends AppCompatActivity {
         sizeDialog.show();
     }
 
+    public void setColors(String color) {
+        editor = preferencias.edit();
+
+        switch (color) {
+            case "branco":
+                backgroundLayout.setBackground(getResources().getDrawable(R.color.branco));
+                txtTitulo.setTextColor(Color.parseColor("#808080"));
+                txtCategoria.setTextColor(Color.parseColor("#808080"));
+                txtConteudo.setTextColor(Color.parseColor("#808080"));
+                editor.putString("background_color", "branco");
+                break;
+            case "preto":
+                backgroundLayout.setBackground(getResources().getDrawable(R.color.preto));
+                txtTitulo.setTextColor(Color.WHITE);
+                txtCategoria.setTextColor(Color.WHITE);
+                txtConteudo.setTextColor(Color.WHITE);
+                editor.putString("background_color", "preto");
+                break;
+            case "sepia":
+                backgroundLayout.setBackground(getResources().getDrawable(R.color.sepia));
+                txtTitulo.setTextColor(Color.parseColor("#616161"));
+                txtCategoria.setTextColor(Color.parseColor("#616161"));
+                txtConteudo.setTextColor(Color.parseColor("#616161"));
+                editor.putString("background_color", "sepia");
+                break;
+        }
+        editor.commit();
+    }
 }

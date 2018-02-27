@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "325059845580",
+    "firebase_url": "https://historias-para-dormir-novo.firebaseio.com",
+    "project_id": "historias-para-dormir-novo",
+    "storage_bucket": "historias-para-dormir-novo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:325059845580:android:c2ad33ccafa15cdd",
+        "android_client_info": {
+          "package_name": "com.historiasparadormir"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "325059845580-qs0cgbo88m4og5on8au45ore9qbhh7dr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsJwTV0QUXflzWDItX1hoTFgF9LO20ig8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
