@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
@@ -21,8 +20,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
+
 import foureyes.com.histriasparadormir.R;
 
 public class Exibe_Historia extends AppCompatActivity {
@@ -63,7 +72,18 @@ public class Exibe_Historia extends AppCompatActivity {
         backgroundLayout = (View) findViewById(R.id.backgroundLayout);
 
 
-        mAdView = (AdView) findViewById(R.id.adView);
+        RequestConfiguration conf = new RequestConfiguration.Builder()
+                .setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G)
+                .setTagForChildDirectedTreatment(RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE).build();
+
+        MobileAds.setRequestConfiguration(conf);
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+
+        mAdView = (AdView) findViewById(R.id.adViewHistory);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
@@ -91,7 +111,7 @@ public class Exibe_Historia extends AppCompatActivity {
 
         preferencias = getPreferences(Context.MODE_PRIVATE);
         text_size = preferencias.getInt("text_size", 20);
-        background_color = preferencias.getString("background_color","branco");
+        background_color = preferencias.getString("background_color", "branco");
         setColors(background_color);
         txtConteudo.setTextSize(text_size);
     }
