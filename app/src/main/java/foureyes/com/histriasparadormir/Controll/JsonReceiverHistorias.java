@@ -8,23 +8,28 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
 import foureyes.com.histriasparadormir.DAO.Banco;
 import foureyes.com.histriasparadormir.Model.Historia;
 import foureyes.com.histriasparadormir.View.Exibe_Lista;
+import foureyes.com.histriasparadormir.View.MainActivity;
 
 /**
  * Created by dev on 21/02/18.
@@ -33,6 +38,7 @@ import foureyes.com.histriasparadormir.View.Exibe_Lista;
 public class JsonReceiverHistorias extends AsyncTask<String, Void, Void> {
 
     private static Context context;
+    private WeakReference<MainActivity> activityReference;
     private String conteudo = null, erro = null;
     ProgressDialog dialog;
     private ArrayList<Historia> lHistorias = new ArrayList<>();
@@ -40,7 +46,8 @@ public class JsonReceiverHistorias extends AsyncTask<String, Void, Void> {
 
     public JsonReceiverHistorias(Context context) {
         this.context = context;
-        dialog = ProgressDialog.show(context, "","Aguarde, baixando histórias...", true);
+        this.activityReference = new WeakReference<MainActivity>((MainActivity) context);
+        dialog = ProgressDialog.show(context, "", "Aguarde, baixando histórias...", true);
         banco = new Banco(context, null, null, 1);
     }
 
@@ -137,12 +144,18 @@ public class JsonReceiverHistorias extends AsyncTask<String, Void, Void> {
             banco.atualizaBanco(lHistorias);
             banco.setLastUpdate(String.valueOf(dateFormat.format(updated)));
         }
-        dialog.dismiss();
         return null;
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
+        MainActivity activity = activityReference.get();
+        if (activity.isDestroyed()) { // or call isFinishing() if min sdk version < 17
+            return;
+        }
+        if (!activity.isFinishing() && dialog != null) {
+            dialog.dismiss();
+        }
         context.startActivity(new Intent(context, Exibe_Lista.class));
     }
 
