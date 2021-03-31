@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -91,6 +92,10 @@ public class MainActivity extends AppCompatActivity {
                 Date dataAtual = dateFormat.parse(Datahoje);
                 Date dataGravada = dateFormat.parse(banco.getLastUpdate());
                 diff = dataAtual.getTime() - dataGravada.getTime();
+
+                Log.e("T-dataAtual", String.valueOf(dataAtual));
+                Log.e("T-dataGravada", String.valueOf(dataGravada));
+                Log.e("T-diff", String.valueOf(diff));
             } catch (ParseException e) {
                 e.printStackTrace();
             }

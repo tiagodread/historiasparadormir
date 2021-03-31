@@ -59,8 +59,6 @@ public class JsonReceiverHistorias extends AsyncTask<String, Void, Void> {
 
     @Override
     protected Void doInBackground(String... params) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date updated = new Date();
         BufferedReader reader = null;
 
         try {
@@ -142,7 +140,6 @@ public class JsonReceiverHistorias extends AsyncTask<String, Void, Void> {
             }
             banco.resetaBanco();
             banco.atualizaBanco(lHistorias);
-            banco.setLastUpdate(String.valueOf(dateFormat.format(updated)));
         }
         return null;
     }
