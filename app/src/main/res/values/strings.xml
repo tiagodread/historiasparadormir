@@ -2,4 +2,5 @@
     <string name="app_name">Histórias para Dormir</string>
     <string name="banner_ad_unit_id">ca-app-pub-5280154778536702/1888232095</string>
     <string name="text_size">text_size</string>
+    <string name="no_internet_message">Você precisa se conectar à internet pelo menos uma vez!</string>
 </resources>
