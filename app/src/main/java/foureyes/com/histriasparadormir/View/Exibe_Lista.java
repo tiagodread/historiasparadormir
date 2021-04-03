@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.RequestConfiguration;
@@ -32,6 +33,8 @@ import com.google.android.gms.ads.initialization.OnInitializationCompleteListene
 import foureyes.com.histriasparadormir.Controll.JsonReceiverHistorias;
 import foureyes.com.histriasparadormir.DAO.Banco;
 import foureyes.com.histriasparadormir.R;
+
+import static com.google.android.gms.ads.MobileAds.initialize;
 
 public class Exibe_Lista extends AppCompatActivity {
 
@@ -43,6 +46,9 @@ public class Exibe_Lista extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exibe__lista);
         b = new Banco(this, null, null, 1);
+
+
+
 
         RequestConfiguration conf = new RequestConfiguration.Builder()
                 .setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G)
@@ -56,6 +62,8 @@ public class Exibe_Lista extends AppCompatActivity {
         });
 
         mAdView = (AdView) findViewById(R.id.adViewList);
+//        mAdView.setAdSize(AdSize.BANNER);
+//        mAdView.setAdUnitId("ca-app-pub-5280154778536702/1888232095");
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
