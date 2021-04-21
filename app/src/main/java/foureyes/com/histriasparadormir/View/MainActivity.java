@@ -5,12 +5,17 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import foureyes.com.histriasparadormir.Controll.JsonReceiverHistorias;
 import foureyes.com.histriasparadormir.DAO.Banco;
@@ -19,14 +24,15 @@ import foureyes.com.histriasparadormir.R;
 public class MainActivity extends AppCompatActivity {
 
     private static Banco banco;
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         banco = new Banco(this, null, null, 1);
-        inicializa();
+        initApp();
     }
 
     @Override
@@ -47,20 +53,16 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-        /*
-    Método que realiza a inicializacao do app, se o banco nao estiver populado ele realiza o download dos dados
-
-    */
-
-    public void inicializa() {
-
-        if (networkConnectivity(this)) {
-
+    /**
+     * Initial logic for the app
+     */
+    public void initApp() {
+        if (isDeviceConnected(this)) {
             if (banco.getQuantDados() == 0) {
-                baixaJson();
+                downloadContent();
             } else {
-                if (checkForUpdates()) {
-                    baixaJson();
+                if (isContentOutOfDate()) {
+                    downloadContent();
                 } else {
                     startActivity(new Intent(this, Exibe_Lista.class));
                 }
@@ -70,59 +72,68 @@ public class MainActivity extends AppCompatActivity {
             if (banco.getQuantDados() > 0) {
                 startActivity(new Intent(this, Exibe_Lista.class));
             } else {
-                Toast.makeText(getApplicationContext(), "Você precisa se conectar à internet pelo menos uma vez!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.no_internet_message,
+                        Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    /*
- @Método que controla as atualizações a cada 7 dias.
- @Autor: Tiago Góes.
- */
-    public boolean checkForUpdates() {
+    /**
+     * Get the last update day in database and check if the content date is greater than 15 days
+     *
+     * @return boolean
+     */
+    public boolean isContentOutOfDate() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        long diffInDays = 0;
+        try {
+            String todayString = dateFormat.format(new Date());
+            Log.i("checkForUpdates", "Today: " + todayString);
 
-        String Datahoje = dateFormat.format(new Date());
-        long diff = 0;
-        boolean status = false;
-
-        if (banco.getLastUpdate() != null) {
-
-            try {
-                Date dataAtual = dateFormat.parse(Datahoje);
-                Date dataGravada = dateFormat.parse(banco.getLastUpdate());
-                diff = dataAtual.getTime() - dataGravada.getTime();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            Date today = dateFormat.parse(todayString);
+            Date lastUpdate = dateFormat.parse(banco.getLastUpdate());
+            Log.i("checkForUpdates", "Last Update: " + banco.getLastUpdate());
 
 
-            if ((diff / 1000 / 60 / 60 / 24) >= 7) {
-                status = true;
-            } else {
-                status = false;
-            }
+            long diffInMillies = Math.abs(lastUpdate.getTime() - today.getTime());
+
+            diffInDays = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+            Log.i("checkForUpdates", "Diff In Days: " + String.valueOf(diffInDays));
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-        return status;
-    }
 
-    //Metodo que inicia a tarefa de baixar o json com os dados do webservice
-    public void baixaJson() {
-        if (networkConnectivity(this)) {
-            String wpUrlLivro = "http://tkdhkd.96.lt/api/get_livros/";
-            new JsonReceiverHistorias(this).execute(wpUrlLivro);
+        if (diffInDays > 15) {
+            return true;
         } else {
-            Toast.makeText(getApplicationContext(), "Você precisa se conectar à internet pelo menos uma vez!", Toast.LENGTH_LONG).show();
+            return false;
         }
     }
 
-    //Metodo que verifica a conexao com a internet
-    private boolean networkConnectivity(Context c) {
-        boolean status = false;
+    /**
+     * Download all content
+     */
+    public void downloadContent() {
+        if (isDeviceConnected(this)) {
+            new JsonReceiverHistorias(this).execute("https://foureyesapps.tech/api/get_livros/");
+        } else {
+            Toast.makeText(getApplicationContext(), R.string.no_internet_message,
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Check internet connection
+     *
+     * @param c
+     * @return boolean
+     */
+    private boolean isDeviceConnected(Context c) {
         ConnectivityManager cm = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            status = true;
+            return true;
         }
-        return status;
+        return false;
     }
 }

@@ -8,6 +8,35 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:325059845580:android:261c7985c2e48301f51169",
+        "android_client_info": {
+          "package_name": "com.historiasparadormir"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "325059845580-qs0cgbo88m4og5on8au45ore9qbhh7dr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsJwTV0QUXflzWDItX1hoTFgF9LO20ig8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "325059845580-qs0cgbo88m4og5on8au45ore9qbhh7dr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:325059845580:android:0ab4e48357ec11f6f51169",
         "android_client_info": {
           "package_name": "foureyes.com.historiasparadormir"

@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -31,6 +30,7 @@ import foureyes.com.histriasparadormir.Controll.JsonReceiverHistorias;
 import foureyes.com.histriasparadormir.DAO.Banco;
 import foureyes.com.histriasparadormir.R;
 
+
 public class Exibe_Lista extends AppCompatActivity {
 
     private Banco b;
@@ -41,6 +41,7 @@ public class Exibe_Lista extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exibe__lista);
         b = new Banco(this, null, null, 1);
+
 
         RequestConfiguration conf = new RequestConfiguration.Builder()
                 .setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G)
@@ -57,7 +58,6 @@ public class Exibe_Lista extends AppCompatActivity {
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
-        // inicializa();
         populaLista();
         exibeHistoria();
     }
@@ -81,25 +81,6 @@ public class Exibe_Lista extends AppCompatActivity {
                 return true;
             default:
                 return false;
-        }
-    }
-
-    //Metodo que verifica a inicializacao do app, se o banco nao estiver populado ele realiza o download dos dados
-    public void inicializa() {
-        if (b.getQuantDados() == 0) {
-            baixaJson();
-        }
-    }
-
-    //Metodo que inicia a tarefa de baixar o json com os dados do webservice
-    public void baixaJson() {
-        if (networkConnectivity(this)) {
-            //link do webservice feito com wordpress
-            String wpUrlLivro = "http://tkdhkd.96.lt/api/get_livros/";
-            new JsonReceiverHistorias(this).execute(wpUrlLivro);
-            populaLista();
-        } else {
-            Toast.makeText(getApplicationContext(), "Sem conexão com a internet!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -163,7 +144,7 @@ public class Exibe_Lista extends AppCompatActivity {
             }
         });
         AlertDialog dialog = builder.create();
-       dialog.show();
+        dialog.show();
 
     }
 }

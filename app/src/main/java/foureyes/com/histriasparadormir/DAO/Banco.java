@@ -5,7 +5,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import foureyes.com.histriasparadormir.Model.Historia;
@@ -14,7 +16,7 @@ import foureyes.com.histriasparadormir.Model.Historia;
  * Created by dev on 21/02/18.
  */
 
-public class Banco extends SQLiteOpenHelper{
+public class Banco extends SQLiteOpenHelper {
 
 
     //Estrutura da tabela
@@ -42,6 +44,12 @@ public class Banco extends SQLiteOpenHelper{
         onCreate(db);
     }
 
+    public Cursor gethistoriasCursor() {
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM historia", null);
+        return cursor;
+    }
+
     public Cursor getHistoriaId(long id) {
 
         SQLiteDatabase db = getWritableDatabase();
@@ -59,23 +67,18 @@ public class Banco extends SQLiteOpenHelper{
             Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE titulo like '" + h.getTitulo() + "'", null);
             cursor.moveToFirst();
             if (cursor.getCount() == 0) {
-                db.execSQL("INSERT INTO historia (titulo,conteudo,tipo,thumb) VALUES ('" + h.getTitulo() + "','" + h.getConteudo() + "','" + h.getTipo() + "','" + h.getThumb() + "')");
+                db.execSQL("INSERT INTO historia (titulo, conteudo, tipo, thumb, updated) VALUES ('" + h.getTitulo() + "','" + h.getConteudo() + "','" + h.getTipo() + "','" + h.getThumb() + "', '" + getToday() + "')");
             }
             cursor.close();
         }
     }
 
-    public void setLastUpdate(String data){
-        SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("INSERT INTO historia (updated) VALUES ('"+data+"')");
-    }
-
-    public String getLastUpdate(){
+    public String getLastUpdate() {
         String data = null;
         SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT updated FROM historia;", null);
-        if (cursor.moveToLast()) {
-            data = cursor.getString(0);
+        Cursor cursor = db.rawQuery("SELECT updated FROM historia WHERE _id=1;", null);
+        if (cursor.moveToFirst()) {
+            data = cursor.getString(cursor.getColumnIndex("updated"));
         }
         return data;
     }
@@ -87,12 +90,6 @@ public class Banco extends SQLiteOpenHelper{
         Cursor cursor = db.rawQuery("SELECT * FROM historia", null);
 
         return cursor.getCount();
-    }
-
-    public Cursor gethistoriasCursor() {
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM historia", null);
-        return cursor;
     }
 
     public List<Historia> gethistorias() {
@@ -120,5 +117,11 @@ public class Banco extends SQLiteOpenHelper{
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         db.execSQL("CREATE TABLE IF NOT EXISTS historia (_id INTEGER PRIMARY KEY, titulo TEXT, conteudo TEXT, tipo TEXT, thumb TEXT, updated DATE );");
+    }
+
+    public String getToday() {
+        Date updated = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return dateFormat.format(updated);
     }
 }
