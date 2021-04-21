@@ -25,3 +25,19 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build
+      
+    - name: run tests
+      run: |
+        echo "Directory Contents:"
+        ls
+      
+#     - name: Save artifacts
+#       uses: actions/upload-artifact@v2
+#       with:
+#         name: a11yReport.json
+#         path: tower-qa/ui-tests/awx-pf-tests/a11yReport.json
+#         if-no-files-found: ignore
+
+
+
+# file:///home/runner/work/historiasparadormir/historiasparadormir/app/build/reports/lint-results.xml
