@@ -21,15 +21,16 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt'
+    - name: Workdir
+      run: |
+        echo "Directory Contents:"
+        ls
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build
       
-    - name: run tests
-      run: |
-        echo "Directory Contents:"
-        ls
+
       
 #     - name: Save artifacts
 #       uses: actions/upload-artifact@v2
