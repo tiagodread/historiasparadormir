@@ -10,9 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,11 +24,13 @@ import foureyes.com.histriasparadormir.R;
 public class MainActivity extends AppCompatActivity {
 
     private static Banco banco;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         banco = new Banco(this, null, null, 1);
         initApp();
     }
@@ -115,8 +115,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void downloadContent() {
         if (isDeviceConnected(this)) {
-            String wpUrlLivro = "http://tkdhkd.96.lt/api/get_livros/";
-            new JsonReceiverHistorias(this).execute(wpUrlLivro);
+            new JsonReceiverHistorias(this).execute("https://foureyesapps.tech/api/get_livros/");
         } else {
             Toast.makeText(getApplicationContext(), R.string.no_internet_message,
                     Toast.LENGTH_LONG).show();

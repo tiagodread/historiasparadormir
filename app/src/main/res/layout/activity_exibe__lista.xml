@@ -16,8 +16,10 @@
         android:id="@+id/adViewList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
         ads:adSize="BANNER"
-        ads:adUnitId="@string/banner_ad_unit_id">
+        ads:adUnitId="ca-app-pub-5280154778536702/4536191329">
+
     </com.google.android.gms.ads.AdView>
 </RelativeLayout>
