@@ -42,21 +42,21 @@ public class Exibe_Lista extends AppCompatActivity {
         setContentView(R.layout.activity_exibe__lista);
         b = new Banco(this, null, null, 1);
 
-
-        RequestConfiguration conf = new RequestConfiguration.Builder()
-                .setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G)
-                .setTagForChildDirectedTreatment(RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE).build();
-
-        MobileAds.setRequestConfiguration(conf);
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
-
-        mAdView = (AdView) findViewById(R.id.adViewList);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+//        Disable adView temporally
+//        RequestConfiguration conf = new RequestConfiguration.Builder()
+//                .setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G)
+//                .setTagForChildDirectedTreatment(RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE).build();
+//
+//        MobileAds.setRequestConfiguration(conf);
+//        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+//            @Override
+//            public void onInitializationComplete(InitializationStatus initializationStatus) {
+//            }
+//        });
+//
+//        mAdView = (AdView) findViewById(R.id.adViewList);
+//        AdRequest adRequest = new AdRequest.Builder().build();
+//        mAdView.loadAd(adRequest);
 
         populaLista();
         exibeHistoria();
