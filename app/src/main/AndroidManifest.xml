@@ -26,7 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".View.Exibe_Lista" />
+        <activity android:name=".View.StoryList" />
         <activity android:name=".View.Exibe_Historia"></activity>
     </application>
 

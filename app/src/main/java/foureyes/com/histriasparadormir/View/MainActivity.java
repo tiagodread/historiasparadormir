@@ -61,14 +61,14 @@ public class MainActivity extends AppCompatActivity {
             if (database.isEmpty() || isContentOutOfDate()) {
                 downloadContent();
             } else {
-                startActivity(new Intent(this, Exibe_Lista.class));
+                startActivity(new Intent(this, StoryList.class));
             }
 
         } else {
             if (!database.isEmpty()) {
-                startActivity(new Intent(this, Exibe_Lista.class));
+                startActivity(new Intent(this, StoryList.class));
             } else {
-                Toast.makeText(getApplicationContext(), R.string.no_internet_message, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.no_internet_message, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
             Log.i("checkForUpdates", "Last Update: " + database.getLastUpdate());
             long diffInMillis = Math.abs(lastUpdate.getTime() - today.getTime());
             DIFF_IN_DAYS = (int) TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
-            Log.i("checkForUpdates", "Diff In Days: " + String.valueOf(DIFF_IN_DAYS));
+            Log.i("checkForUpdates", "Diff In Days: " + DIFF_IN_DAYS);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -102,9 +102,9 @@ public class MainActivity extends AppCompatActivity {
      */
     public void downloadContent() {
         if (isDeviceConnected(this)) {
-            new JsonReceiverHistorias(this).execute(String.valueOf(R.string.api_url));
+            new JsonReceiverHistorias(this).execute(getApplicationContext().getString(R.string.api_url));
         } else {
-            Toast.makeText(getApplicationContext(), R.string.no_internet_message,
+            Toast.makeText(this, R.string.no_internet_message,
                     Toast.LENGTH_LONG).show();
         }
     }

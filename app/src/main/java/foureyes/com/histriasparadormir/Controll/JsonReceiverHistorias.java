@@ -26,7 +26,7 @@ import java.util.Objects;
 import foureyes.com.histriasparadormir.DAO.Database;
 import foureyes.com.histriasparadormir.Model.Story;
 import foureyes.com.histriasparadormir.R;
-import foureyes.com.histriasparadormir.View.Exibe_Lista;
+import foureyes.com.histriasparadormir.View.StoryList;
 import foureyes.com.histriasparadormir.View.MainActivity;
 
 /**
@@ -36,16 +36,16 @@ import foureyes.com.histriasparadormir.View.MainActivity;
 public class JsonReceiverHistorias extends AsyncTask<String, Void, Void> {
 
     private static Context context;
-    private WeakReference<MainActivity> activityReference;
+    private final WeakReference<MainActivity> activityReference;
     private String content = null, error = null;
     ProgressDialog dialog;
-    private ArrayList<Story> lStories = new ArrayList<>();
-    private Database database;
+    private final ArrayList<Story> lStories = new ArrayList<>();
+    private final Database database;
 
     public JsonReceiverHistorias(Context context) {
-        this.context = context;
+        JsonReceiverHistorias.context = context;
         this.activityReference = new WeakReference<MainActivity>((MainActivity) context);
-        dialog = ProgressDialog.show(context, "", String.valueOf(R.string.downloading_message), true);
+        dialog = ProgressDialog.show(context, "", context.getString(R.string.downloading_message), true);
         database = new Database(context, null, null, 1);
     }
 
@@ -90,7 +90,7 @@ public class JsonReceiverHistorias extends AsyncTask<String, Void, Void> {
 
 
         if (error != null) {
-            Toast.makeText(context, String.valueOf(R.string.error) + error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.error + error, Toast.LENGTH_SHORT).show();
         } else {
             JSONObject jsonObject;
             String id, title, category = null, thumbnailUri, thumbnailFile = null, content;
@@ -141,7 +141,7 @@ public class JsonReceiverHistorias extends AsyncTask<String, Void, Void> {
         if (!activity.isFinishing() && dialog != null) {
             dialog.dismiss();
         }
-        context.startActivity(new Intent(context, Exibe_Lista.class));
+        context.startActivity(new Intent(context, StoryList.class));
     }
 
     public String downloadThumbnail(String thumbnailUri, String postId) {

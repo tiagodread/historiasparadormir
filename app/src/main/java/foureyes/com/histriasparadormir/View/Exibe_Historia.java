@@ -65,11 +65,11 @@ public class Exibe_Historia extends AppCompatActivity {
 
         inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
         layout = inflater.inflate(R.layout.custom_dialog, null);
-        seekBar = (SeekBar) layout.findViewById(R.id.seekBar);
-        branco = (Button) layout.findViewById(R.id.btn_branco);
-        preto = (Button) layout.findViewById(R.id.btn_preto);
-        sepia = (Button) layout.findViewById(R.id.btn_sepia);
-        backgroundLayout = (View) findViewById(R.id.backgroundLayout);
+        seekBar = layout.findViewById(R.id.seekBar);
+        branco = layout.findViewById(R.id.btn_branco);
+        preto = layout.findViewById(R.id.btn_preto);
+        sepia = layout.findViewById(R.id.btn_sepia);
+        backgroundLayout = findViewById(R.id.backgroundLayout);
 
 
         RequestConfiguration conf = new RequestConfiguration.Builder()
@@ -83,23 +83,23 @@ public class Exibe_Historia extends AppCompatActivity {
             }
         });
 
-        mAdView = (AdView) findViewById(R.id.adViewHistory);
+        mAdView = findViewById(R.id.adViewHistory);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
-        txtTitulo = (TextView) findViewById(R.id.titulo_sobre);
-        txtCategoria = (TextView) findViewById(R.id.categoria);
-        txtConteudo = (TextView) findViewById(R.id.txtconteudo);
-        thumbnail = (ImageView) findViewById(R.id.thumb);
-        tv = (TextView) layout.findViewById(R.id.size);
+        txtTitulo = findViewById(R.id.titulo_sobre);
+        txtCategoria = findViewById(R.id.categoria);
+        txtConteudo = findViewById(R.id.txtconteudo);
+        thumbnail = findViewById(R.id.thumb);
+        tv = layout.findViewById(R.id.size);
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
-        tituloHistoria = getIntent().getStringExtra("titulo");
-        categoriaHistoria = getIntent().getStringExtra("tipo");
-        caminhoImagemHistoria = getIntent().getStringExtra("thumb");
-        conteudoHistoria = getIntent().getStringExtra("conteudo");
+        tituloHistoria = getIntent().getStringExtra("title");
+        categoriaHistoria = getIntent().getStringExtra("type");
+        caminhoImagemHistoria = getIntent().getStringExtra("thumbnail");
+        conteudoHistoria = getIntent().getStringExtra("content");
         imagemHistoria = BitmapFactory.decodeFile(caminhoImagemHistoria, options);
 
         thumbnail.setImageBitmap(imagemHistoria);
@@ -200,7 +200,7 @@ public class Exibe_Historia extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             seekBar.setProgress(preferencias.getInt("text_size", 20));
         }
-        tv.setText(String.valueOf(String.valueOf(preferencias.getInt("text_size", 20) + "px")));
+        tv.setText(String.valueOf(preferencias.getInt("text_size", 20) + "px"));
         txtConteudo.setTextSize(preferencias.getInt("text_size", 20));
 
 
@@ -233,7 +233,7 @@ public class Exibe_Historia extends AppCompatActivity {
 
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        tv.setText(String.valueOf(progress) + "px");
+                        tv.setText(progress + "px");
                         txtConteudo.setTextSize(Float.parseFloat(String.valueOf(progress)));
                     }
 

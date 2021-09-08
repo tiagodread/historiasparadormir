@@ -19,9 +19,9 @@ import foureyes.com.histriasparadormir.Model.Story;
 public class Database extends SQLiteOpenHelper {
 
 
-    //Estrutura da tabela
-    private static final String DATABASE_NAME = "livros";
-    private static final String TABLE_NAME = "historia";
+    // Database Schema
+    private static final String DATABASE_NAME = "historiasparadormir";
+    private static final String TABLE_NAME = "stories";
     private static final int DATABASE_VERSION = 1;
     private static final List<Story> STORY = new ArrayList<Story>();
 
@@ -32,42 +32,36 @@ public class Database extends SQLiteOpenHelper {
         database = this;
     }
 
-
-    @Override //Metodo que cria a tabela
+    @Override // Create table
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (_id INTEGER PRIMARY KEY, titulo TEXT, conteudo TEXT, tipo TEXT, thumb TEXT, updated DATE );");
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (_id INTEGER PRIMARY KEY, title TEXT, content TEXT, type TEXT, thumbnail TEXT, updated DATE );");
     }
 
-    @Override //Metodo que atualiza a tabela
+    @Override // Update table
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
 
-    public Cursor gethistoriasCursor() {
+    public Cursor getStoryCursor() {
         SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM historia", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
         return cursor;
     }
 
-    public Cursor getHistoriaId(long id) {
-
+    public Cursor getStoryId(long id) {
         SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT titulo,conteudo,tipo,thumb FROM " + TABLE_NAME + " WHERE _id = " + id, null);
-
+        Cursor cursor = db.rawQuery("SELECT title, content, type, thumbnail FROM " + TABLE_NAME + " WHERE _id = " + id, null);
         return cursor;
     }
 
     public void updateDatabase(ArrayList<Story> stories) {
-
         SQLiteDatabase db = getWritableDatabase();
-
         for (Story h : stories) {
-
-            Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE titulo like '" + h.getTitle() + "'", null);
+            Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE title like '" + h.getTitle() + "'", null);
             cursor.moveToFirst();
             if (cursor.getCount() == 0) {
-                db.execSQL("INSERT INTO historia (titulo, conteudo, tipo, thumb, updated) VALUES ('" + h.getTitle() + "','" + h.getContent() + "','" + h.getType() + "','" + h.getThumbnail() + "', '" + getToday() + "')");
+                db.execSQL("INSERT INTO " + TABLE_NAME + " (title, content, type, thumbnail, updated) VALUES ('" + h.getTitle() + "','" + h.getContent() + "','" + h.getType() + "','" + h.getThumbnail() + "', '" + getToday() + "')");
             }
             cursor.close();
         }
@@ -76,7 +70,7 @@ public class Database extends SQLiteOpenHelper {
     public String getLastUpdate() {
         String data = null;
         SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT updated FROM historia WHERE _id=1;", null);
+        Cursor cursor = db.rawQuery("SELECT updated FROM " + TABLE_NAME + " WHERE _id=1;", null);
         if (cursor.moveToFirst()) {
             data = cursor.getString(cursor.getColumnIndex("updated"));
         }
@@ -85,35 +79,14 @@ public class Database extends SQLiteOpenHelper {
 
     public boolean isEmpty() {
         SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM historia", null);
-        return cursor.getCount() == 0 ? true : false;
-    }
-
-    public List<Story> gethistorias() {
-
-
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM historia", null);
-        cursor.moveToFirst();
-
-        while (cursor.isAfterLast() == false) {
-            Story l = new Story(cursor.getString(cursor.getColumnIndex("titulo")), cursor.getString(cursor.getColumnIndex("conteudo")), cursor.getString(cursor.getColumnIndex("tipo")), cursor.getString(cursor.getColumnIndex("thumb")));
-            STORY.add(l);
-            cursor.moveToNext();
-        }
-        cursor.close();
-
-        return STORY;
-    }
-
-    public int getQuantidade() {
-        return STORY.size();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        return cursor.getCount() == 0;
     }
 
     public void resetDatabase() {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-        db.execSQL("CREATE TABLE IF NOT EXISTS historia (_id INTEGER PRIMARY KEY, titulo TEXT, conteudo TEXT, tipo TEXT, thumb TEXT, updated DATE );");
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (_id INTEGER PRIMARY KEY, title TEXT, content TEXT, type TEXT, thumbnail TEXT, updated DATE );");
     }
 
     public String getToday() {
