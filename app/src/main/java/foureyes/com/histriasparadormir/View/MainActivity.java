@@ -18,12 +18,12 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import foureyes.com.histriasparadormir.Controll.JsonReceiverHistorias;
-import foureyes.com.histriasparadormir.DAO.Banco;
+import foureyes.com.histriasparadormir.DAO.Database;
 import foureyes.com.histriasparadormir.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static Banco banco;
+    private static Database database;
     private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        banco = new Banco(this, null, null, 1);
+        database = new Database(this, null, null, 1);
         initApp();
     }
 
@@ -58,22 +58,17 @@ public class MainActivity extends AppCompatActivity {
      */
     public void initApp() {
         if (isDeviceConnected(this)) {
-            if (banco.getQuantDados() == 0) {
+            if (database.isEmpty() || isContentOutOfDate()) {
                 downloadContent();
             } else {
-                if (isContentOutOfDate()) {
-                    downloadContent();
-                } else {
-                    startActivity(new Intent(this, Exibe_Lista.class));
-                }
+                startActivity(new Intent(this, Exibe_Lista.class));
             }
 
         } else {
-            if (banco.getQuantDados() > 0) {
+            if (!database.isEmpty()) {
                 startActivity(new Intent(this, Exibe_Lista.class));
             } else {
-                Toast.makeText(getApplicationContext(), R.string.no_internet_message,
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.no_internet_message, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -85,29 +80,21 @@ public class MainActivity extends AppCompatActivity {
      */
     public boolean isContentOutOfDate() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        long diffInDays = 0;
+        int OUT_OF_DATE_DAYS_LIMIT = 15;
+        int DIFF_IN_DAYS = 0;
+        String TODAY_STRING = dateFormat.format(new Date());
         try {
-            String todayString = dateFormat.format(new Date());
-            Log.i("checkForUpdates", "Today: " + todayString);
-
-            Date today = dateFormat.parse(todayString);
-            Date lastUpdate = dateFormat.parse(banco.getLastUpdate());
-            Log.i("checkForUpdates", "Last Update: " + banco.getLastUpdate());
-
-
-            long diffInMillies = Math.abs(lastUpdate.getTime() - today.getTime());
-
-            diffInDays = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-            Log.i("checkForUpdates", "Diff In Days: " + String.valueOf(diffInDays));
+            Date today = dateFormat.parse(TODAY_STRING);
+            Date lastUpdate = dateFormat.parse(database.getLastUpdate());
+            Log.i("checkForUpdates", "Today: " + TODAY_STRING);
+            Log.i("checkForUpdates", "Last Update: " + database.getLastUpdate());
+            long diffInMillis = Math.abs(lastUpdate.getTime() - today.getTime());
+            DIFF_IN_DAYS = (int) TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+            Log.i("checkForUpdates", "Diff In Days: " + String.valueOf(DIFF_IN_DAYS));
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-        if (diffInDays > 15) {
-            return true;
-        } else {
-            return false;
-        }
+        return DIFF_IN_DAYS > OUT_OF_DATE_DAYS_LIMIT;
     }
 
     /**
@@ -115,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void downloadContent() {
         if (isDeviceConnected(this)) {
-            new JsonReceiverHistorias(this).execute("https://foureyesapps.tech/api/get_livros/");
+            new JsonReceiverHistorias(this).execute(String.valueOf(R.string.api_url));
         } else {
             Toast.makeText(getApplicationContext(), R.string.no_internet_message,
                     Toast.LENGTH_LONG).show();
@@ -125,15 +112,12 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Check internet connection
      *
-     * @param c
+     * @param context
      * @return boolean
      */
-    private boolean isDeviceConnected(Context c) {
-        ConnectivityManager cm = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
+    private boolean isDeviceConnected(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-            return true;
-        }
-        return false;
+        return networkInfo != null && networkInfo.isConnected();
     }
 }

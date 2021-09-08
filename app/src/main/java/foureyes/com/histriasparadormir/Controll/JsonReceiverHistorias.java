@@ -18,13 +18,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Objects;
 
-import foureyes.com.histriasparadormir.DAO.Banco;
-import foureyes.com.histriasparadormir.Model.Historia;
+import foureyes.com.histriasparadormir.DAO.Database;
+import foureyes.com.histriasparadormir.Model.Story;
+import foureyes.com.histriasparadormir.R;
 import foureyes.com.histriasparadormir.View.Exibe_Lista;
 import foureyes.com.histriasparadormir.View.MainActivity;
 
@@ -36,16 +37,16 @@ public class JsonReceiverHistorias extends AsyncTask<String, Void, Void> {
 
     private static Context context;
     private WeakReference<MainActivity> activityReference;
-    private String conteudo = null, erro = null;
+    private String content = null, error = null;
     ProgressDialog dialog;
-    private ArrayList<Historia> lHistorias = new ArrayList<>();
-    private Banco banco;
+    private ArrayList<Story> lStories = new ArrayList<>();
+    private Database database;
 
     public JsonReceiverHistorias(Context context) {
         this.context = context;
         this.activityReference = new WeakReference<MainActivity>((MainActivity) context);
-        dialog = ProgressDialog.show(context, "", "Aguarde, baixando histórias...", true);
-        banco = new Banco(context, null, null, 1);
+        dialog = ProgressDialog.show(context, "", String.valueOf(R.string.downloading_message), true);
+        database = new Database(context, null, null, 1);
     }
 
     @Override
@@ -59,84 +60,74 @@ public class JsonReceiverHistorias extends AsyncTask<String, Void, Void> {
         BufferedReader reader = null;
 
         try {
-            //Url do webservice
+            // API URL
             URL url = new URL(params[0]);
 
-            //Envia a requisicao POST
-            URLConnection conn = url.openConnection();
-            conn.setDoOutput(true);
+            // Create connection and make POST request
+            URLConnection urlConnection = url.openConnection();
+            urlConnection.setDoOutput(true);
 
-            //Recebe a resposta do servidor
-            reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String line = null;
+            // Read response
+            reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
 
-            // Le a resposta do servidor
+            // Append response to stringBuilder
             while ((line = reader.readLine()) != null) {
-                //Coloca a resposta do servidor e uma string
-                sb.append(line + "");
+                stringBuilder.append(line);
             }
 
-            conteudo = sb.toString();
+            content = stringBuilder.toString();
         } catch (Exception ex) {
-            erro = ex.getMessage();
+            error = ex.getMessage();
         } finally {
             try {
+                assert reader != null;
                 reader.close();
-            } catch (Exception ex) {
+            } catch (Exception ignored) {
             }
         }
 
 
-        if (erro != null) {
-            Toast.makeText(context, "Erro: " + erro, Toast.LENGTH_SHORT).show();
+        if (error != null) {
+            Toast.makeText(context, String.valueOf(R.string.error) + error, Toast.LENGTH_SHORT).show();
         } else {
-
-            JSONObject respostaJson = null;
-            String id, titulo, category = null, thumbnail, content;
+            JSONObject jsonObject;
+            String id, title, category = null, thumbnailUri, thumbnailFile = null, content;
 
             try {
+                // Create a new JSON object with name/value pair
+                jsonObject = new JSONObject(this.content);
 
-                //Cria um novo Jsonobjeto com nome/valor mapeado do json
-                respostaJson = new JSONObject(conteudo);
+                // Get the main array key "posts"
+                JSONArray postsArray = jsonObject.optJSONArray("posts");
 
+                for (int i = 0; i < Objects.requireNonNull(postsArray).length(); i++) {
+                    JSONObject postObject = postsArray.getJSONObject(i);
 
-                //Resorna o valor mapeado pelo nome se existir
-                JSONArray jsonNoPrincipal = respostaJson.optJSONArray("posts");
+                    id = postObject.getString("id");
+                    title = postObject.getString("title");
+                    content = postObject.getString("content");
+                    thumbnailUri = postObject.getString("thumbnail");
+                    thumbnailFile = downloadThumbnail(thumbnailUri, id);
 
-                for (int i = 0; i < jsonNoPrincipal.length(); i++) {
-                    //Pega o objeto de cada no JSON
-                    JSONObject jsonNoFilho = jsonNoPrincipal.getJSONObject(i);
-
-                    id = jsonNoFilho.getString("id");
-                    titulo = jsonNoFilho.getString("title");
-                    content = jsonNoFilho.getString("content");
-                    thumbnail = jsonNoFilho.getString("thumbnail");
-
-
-                    String thumbFile = baixaESalvaImg(thumbnail, id);
-
-                    //Pega o no de categorias
-                    JSONArray categories = jsonNoFilho.getJSONArray("categories");
-
-                    //Varre o array de categorias e pega o objeto de nome title
+                    JSONArray categories = postObject.getJSONArray("categories");
                     for (int n = 0; n < categories.length(); n++) {
                         JSONObject jsonCategories = categories.getJSONObject(n);
                         category = jsonCategories.getString("title");
                     }
 
-                    StringBuffer categoria = new StringBuffer();
-                    categoria.append(category);
-
-                    Historia l = new Historia(titulo, content, String.valueOf(categoria), thumbFile);
-                    lHistorias.add(l);
+                    StringBuffer stringBuffer = new StringBuffer();
+                    stringBuffer.append(category);
+                    Story story = new Story(title, content, String.valueOf(stringBuffer), thumbnailFile);
+                    lStories.add(story);
                 }
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            banco.resetaBanco();
-            banco.atualizaBanco(lHistorias);
+            database.resetDatabase();
+            database.updateDatabase(lStories);
         }
         return null;
     }
@@ -153,30 +144,28 @@ public class JsonReceiverHistorias extends AsyncTask<String, Void, Void> {
         context.startActivity(new Intent(context, Exibe_Lista.class));
     }
 
-    public String baixaESalvaImg(String thumbnail, String idPost) {
-        String imgName;
-        imgName = thumbnail.substring(thumbnail.lastIndexOf('/') + 1);
-        URL bit;
-        Bitmap bmp = null;
+    public String downloadThumbnail(String thumbnailUri, String postId) {
+        String imgName = thumbnailUri.substring(thumbnailUri.lastIndexOf('/') + 1);
+        URL url;
+        Bitmap bitmap = null;
 
         try {
-            bit = new URL(thumbnail);
-            bmp = BitmapFactory.decodeStream(bit.openConnection().getInputStream());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            url = new URL(thumbnailUri);
+            bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         File myDir = new File(String.valueOf(context.getExternalFilesDir(null)));
         myDir.mkdirs();
-        File file = new File(myDir, idPost + "_" + imgName);
+        File file = new File(myDir, postId + "_" + imgName);
         if (file.exists()) file.delete();
         try {
-            FileOutputStream out = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.JPEG, 100, out);
-            out.flush();
-            out.close();
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            assert bitmap != null;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+            fileOutputStream.flush();
+            fileOutputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

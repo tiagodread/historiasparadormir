@@ -10,26 +10,26 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import foureyes.com.histriasparadormir.Model.Historia;
+import foureyes.com.histriasparadormir.Model.Story;
 
 /**
  * Created by dev on 21/02/18.
  */
 
-public class Banco extends SQLiteOpenHelper {
+public class Database extends SQLiteOpenHelper {
 
 
     //Estrutura da tabela
     private static final String DATABASE_NAME = "livros";
     private static final String TABLE_NAME = "historia";
     private static final int DATABASE_VERSION = 1;
-    private static final List<Historia> historia = new ArrayList<Historia>();
+    private static final List<Story> STORY = new ArrayList<Story>();
 
-    Banco b;
+    Database database;
 
-    public Banco(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    public Database(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        b = this;
+        database = this;
     }
 
 
@@ -58,16 +58,16 @@ public class Banco extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public void atualizaBanco(ArrayList<Historia> historias) {
+    public void updateDatabase(ArrayList<Story> stories) {
 
         SQLiteDatabase db = getWritableDatabase();
 
-        for (Historia h : historias) {
+        for (Story h : stories) {
 
-            Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE titulo like '" + h.getTitulo() + "'", null);
+            Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE titulo like '" + h.getTitle() + "'", null);
             cursor.moveToFirst();
             if (cursor.getCount() == 0) {
-                db.execSQL("INSERT INTO historia (titulo, conteudo, tipo, thumb, updated) VALUES ('" + h.getTitulo() + "','" + h.getConteudo() + "','" + h.getTipo() + "','" + h.getThumb() + "', '" + getToday() + "')");
+                db.execSQL("INSERT INTO historia (titulo, conteudo, tipo, thumb, updated) VALUES ('" + h.getTitle() + "','" + h.getContent() + "','" + h.getType() + "','" + h.getThumbnail() + "', '" + getToday() + "')");
             }
             cursor.close();
         }
@@ -83,16 +83,13 @@ public class Banco extends SQLiteOpenHelper {
         return data;
     }
 
-    public int getQuantDados() {
-        boolean status;
-
+    public boolean isEmpty() {
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM historia", null);
-
-        return cursor.getCount();
+        return cursor.getCount() == 0 ? true : false;
     }
 
-    public List<Historia> gethistorias() {
+    public List<Story> gethistorias() {
 
 
         SQLiteDatabase db = getWritableDatabase();
@@ -100,20 +97,20 @@ public class Banco extends SQLiteOpenHelper {
         cursor.moveToFirst();
 
         while (cursor.isAfterLast() == false) {
-            Historia l = new Historia(cursor.getString(cursor.getColumnIndex("titulo")), cursor.getString(cursor.getColumnIndex("conteudo")), cursor.getString(cursor.getColumnIndex("tipo")), cursor.getString(cursor.getColumnIndex("thumb")));
-            historia.add(l);
+            Story l = new Story(cursor.getString(cursor.getColumnIndex("titulo")), cursor.getString(cursor.getColumnIndex("conteudo")), cursor.getString(cursor.getColumnIndex("tipo")), cursor.getString(cursor.getColumnIndex("thumb")));
+            STORY.add(l);
             cursor.moveToNext();
         }
         cursor.close();
 
-        return historia;
+        return STORY;
     }
 
     public int getQuantidade() {
-        return historia.size();
+        return STORY.size();
     }
 
-    public void resetaBanco() {
+    public void resetDatabase() {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         db.execSQL("CREATE TABLE IF NOT EXISTS historia (_id INTEGER PRIMARY KEY, titulo TEXT, conteudo TEXT, tipo TEXT, thumb TEXT, updated DATE );");
