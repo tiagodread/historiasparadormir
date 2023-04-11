@@ -3,7 +3,7 @@
     <string name="banner_ad_unit_id">ca-app-pub-5280154778536702/1888232095</string>
     <string name="text_size">text_size</string>
     <string name="no_internet_message">Você precisa se conectar à internet pelo menos uma vez!</string>
-    <string name="api_url">https://foureyesapps.tech/api/get_livros/</string>
+    <string name="api_url">https://historiasparadormir.foureyesapps.tech/api/get_livros/</string>
     <string name="downloading_message">Aguarde, baixando histórias...</string>
     <string name="error">Error: </string>
 </resources>
