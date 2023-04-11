@@ -15,6 +15,12 @@ import android.widget.SimpleCursorAdapter;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
 import foureyes.com.histriasparadormir.DAO.Database;
 import foureyes.com.histriasparadormir.R;
 
@@ -22,6 +28,7 @@ import foureyes.com.histriasparadormir.R;
 public class StoryList extends AppCompatActivity {
 
     private Database database;
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +37,11 @@ public class StoryList extends AppCompatActivity {
         database = new Database(this, null, null, 1);
         populateList();
         showStory();
+        MobileAds.initialize(this, initializationStatus -> {
+        });
+        mAdView = findViewById(R.id.adViewList);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     @Override
