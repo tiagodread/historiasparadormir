@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -105,7 +106,7 @@ public class StoryList extends AppCompatActivity {
 
     public void appInfo() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("O Aplicativo Histórias para dormir foi elaborado para estimular a imaginação das crianças antes de dormir com uma boa dose de histórias clássicas. \n Todas as histórias do app foram retiradas de sites que já as disponibilizam de forma gratuíta. Ícone: Designed by Freepik").setTitle("Sobre este aplicativo");
+        builder.setMessage(Html.fromHtml("<b>Sobre</b> <br><br>- <a href=\"https://historiasparadormir.foureyesapps.tech/politica-de-privacidade/\">Política de privacidade</a><br><br>- <a href=\"https://historiasparadormir.foureyesapps.tech/termos-de-uso/\">Termos de uso</a>"));
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
             }
